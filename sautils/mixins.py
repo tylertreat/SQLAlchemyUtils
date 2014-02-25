@@ -59,11 +59,12 @@ def _to_dict_rec(obj, data, visited, follow_rels, force_serialization):
     visited.add(obj)
 
     for prop in inspect(obj.__class__).iterate_properties:
-        if not isinstance(prop, RelationshipProperty):
+        serialize = prop.info.get('serialize', True) or force_serialization
+
+        if not isinstance(prop, RelationshipProperty) and serialize:
             data[prop.key.lstrip('_')] = getattr(obj, prop.key)
 
-        elif follow_rels and (prop.info.get('serialize', True) or
-                              force_serialization):
+        elif follow_rels and serialize:
             relationship = getattr(obj, prop.key)
 
             if prop.uselist:
