@@ -1,21 +1,15 @@
-from datetime import datetime
-from datetime import timedelta
 import json
 
 from sqlalchemy import inspect
 from sqlalchemy.orm.relationships import RelationshipProperty
 
-
-class DateTimeEncoder(json.JSONEncoder):
-
-    def default(self, obj):
-        if isinstance(obj, (datetime, timedelta)):
-            return str(obj)
-
-        return json.JSONEncoder.default(self, obj)
+from sautils.encoders import DateTimeEncoder
 
 
 class SerializeMixin(object):
+    """This mixin allows arbitrary SQLAlchemy models to be serialized to dicts
+    and subsequently to JSON (and potentially other formats).
+    """
 
     def to_dict(self, follow_rels=False, force_serialization=False):
         """Convert the model to a dict.
