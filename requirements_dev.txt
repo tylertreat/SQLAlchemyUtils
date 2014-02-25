@@ -1,0 +1,6 @@
+coverage
+flake8
+nose
+mock
+NoseGunit
+rednose==0.3
