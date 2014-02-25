@@ -56,9 +56,6 @@ def _to_dict_rec(obj, data, visited, follow_rels, force_serialization):
     """Transform the model to a dict, recursing on related models if necessary.
     """
 
-    if hasattr(obj, '__include__'):
-        data.update(obj.__include__())
-
     visited.add(obj)
 
     for prop in inspect(obj.__class__).iterate_properties:
@@ -91,6 +88,9 @@ def _to_dict_rec(obj, data, visited, follow_rels, force_serialization):
                     data[prop.key.lstrip('_')] = _to_dict_rec(
                         relationship, dict(), visited, follow_rels,
                         force_serialization)
+
+    if hasattr(obj, '__include__'):
+        data.update(obj.__include__())
 
     return data
 
