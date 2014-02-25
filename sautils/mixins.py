@@ -57,18 +57,13 @@ def _to_dict_rec(obj, data, visited, follow_rels, force_serialization):
     """
 
     visited.add(obj)
-    mapper = inspect(obj.__class__)
 
-    for column in mapper.columns:
-        if column.info.get('serialize', True) or force_serialization:
-            data[column.name] = getattr(obj, column.name)
+    for prop in inspect(obj.__class__).iterate_properties:
+        if not isinstance(prop, RelationshipProperty):
+            data[prop.key.lstrip('_')] = getattr(obj, prop.key)
 
-    if follow_rels:
-        for prop in mapper.iterate_properties:
-            if not isinstance(prop, RelationshipProperty) or \
-               not (prop.info.get('serialize', True) or force_serialization):
-                continue
-
+        elif follow_rels and (prop.info.get('serialize', True) or
+                              force_serialization):
             relationship = getattr(obj, prop.key)
 
             if prop.uselist:
