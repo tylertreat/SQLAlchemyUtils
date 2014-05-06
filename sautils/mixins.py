@@ -62,7 +62,10 @@ def _to_dict_rec(obj, data, visited, follow_rels, force_serialization):
         serialize = prop.info.get('serialize', True) or force_serialization
 
         if not isinstance(prop, RelationshipProperty) and serialize:
-            data[prop.key.lstrip('_')] = getattr(obj, prop.key)
+            if prop.info.get('json', False):
+                data[prop.key.lstrip('_')] = json.loads(getattr(obj, prop.key))
+            else:
+                data[prop.key.lstrip('_')] = getattr(obj, prop.key)
 
         elif follow_rels and serialize:
             relationship = getattr(obj, prop.key)
